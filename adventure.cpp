@@ -1,12 +1,12 @@
 #include "adventure.h"
 #include "map.h"
 #include "console.h"
+#include "constants.h"   // ← для WIND_PUSH_DIST
 #include <iostream>
 #include <cctype>
 #include <cstdlib>
 #include <ctime>
 
-// Читаем одно действие игрока (W/A/S/D/Q), без магических чисел
 static char readDirection() {
     while (true) {
         std::cout << "Действие (W - вверх, A - влево, S - вниз, D - вправо, Q - домой): ";
@@ -30,6 +30,8 @@ void runAdventure() {
 
     std::cout << "\n=== ПРИКЛЮЧЕНИЕ НАЧАЛОСЬ ===\n";
     std::cout << "Размер карты: " << map.width << " x " << map.height << "\n";
+    std::cout << "Стрелки ^ v < > — сквозняк: сдувает на "
+              << WIND_PUSH_DIST << " клетки.\n";
 
     bool active = true;
     while (active) {
@@ -48,7 +50,6 @@ void runAdventure() {
         }
     }
 
-    // КРИТИЧНО: освобождаем память перед выходом
     freeMap(map);
     std::cout << "=== ПРИКЛЮЧЕНИЕ ЗАВЕРШЕНО ===\n";
 }

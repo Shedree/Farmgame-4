@@ -12,15 +12,12 @@ bool allocateMap(GameMap& map, int w, int h) {
     map.heroX  = 0;
     map.heroY  = 0;
 
-    // 1) массив указателей (строк)
     map.cells = (char**)malloc(h * sizeof(char*));
     if (!map.cells) return false;
 
-    // 2) в каждой строке — массив символов
     for (int i = 0; i < h; ++i) {
         map.cells[i] = (char*)malloc(w * sizeof(char));
         if (!map.cells[i]) {
-            // аккуратно освобождаем уже выделенное — иначе утечка
             for (int k = 0; k < i; ++k) free(map.cells[k]);
             free(map.cells);
             map.cells = nullptr;
@@ -53,10 +50,11 @@ bool isInside(const GameMap& map, int x, int y) {
 bool isWalkable(const GameMap& map, int x, int y) {
     if (!isInside(map, x, y)) return false;
     char c = map.cells[y][x];
+    // Стрелки ветра проходимы — они НЕ в списке запрещённых
     return c != TILE_WALL && c != TILE_TREE && c != TILE_ROCK;
 }
 
-// ---- Поиск случайной свободной клетки ----
+// ---- Поиск случайной свободной клетки (только TILE_FLOOR) ----
 void findFreeCell(const GameMap& map, int& outX, int& outY) {
     for (int attempt = 0; attempt < MAX_GENERATION_TRIES; ++attempt) {
         int x = rand() % map.width;
@@ -67,7 +65,6 @@ void findFreeCell(const GameMap& map, int& outX, int& outY) {
             return;
         }
     }
-    // fallback — просто первая свободная
     for (int y = 1; y < map.height - 1; ++y) {
         for (int x = 1; x < map.width - 1; ++x) {
             if (map.cells[y][x] == TILE_FLOOR) {
@@ -83,21 +80,19 @@ void findFreeCell(const GameMap& map, int& outX, int& outY) {
 
 // ---- Генерация с явными размерами ----
 bool generateMapWithSize(GameMap& map, int w, int h) {
-    // на всякий случай очищаем старую карту (безопасно, если её нет)
-    freeMap(map);
+    freeMap(map);   // безопасно, если карты нет
 
     if (!allocateMap(map, w, h)) {
         std::cout << "Ошибка: не удалось выделить память под карту.\n";
         return false;
     }
 
-    // Вероятность препятствий (15..30%)
     int chance = OBSTACLE_PERCENT_MIN +
                  rand() % (OBSTACLE_PERCENT_MAX - OBSTACLE_PERCENT_MIN + 1);
 
+    // 1) Границы — стены, внутри — препятствия T/R с шансом chance%
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            // Внешние границы — стены
             if (x == 0 || y == 0 || x == w - 1 || y == h - 1) {
                 map.cells[y][x] = TILE_WALL;
             } else {
@@ -112,7 +107,22 @@ bool generateMapWithSize(GameMap& map, int w, int h) {
         }
     }
 
-    // Ставим героя на случайную свободную клетку
+    // 2) Сквозняк: расставляем стрелки ветра на свободных клетках
+    for (int y = 1; y < h - 1; ++y) {
+        for (int x = 1; x < w - 1; ++x) {
+            if (map.cells[y][x] != TILE_FLOOR) continue;
+            if (rand() % 100 >= WIND_PERCENT)  continue;
+
+            switch (rand() % 4) {
+                case 0: map.cells[y][x] = TILE_WIND_UP;    break;
+                case 1: map.cells[y][x] = TILE_WIND_DOWN;  break;
+                case 2: map.cells[y][x] = TILE_WIND_LEFT;  break;
+                case 3: map.cells[y][x] = TILE_WIND_RIGHT; break;
+            }
+        }
+    }
+
+    // 3) Герой — на случайную свободную клетку (TILE_FLOOR, не на стрелку)
     int hx, hy;
     findFreeCell(map, hx, hy);
     map.cells[hy][hx] = TILE_HERO;
@@ -151,19 +161,65 @@ void printMap(const GameMap& map) {
     }
 }
 
-// ---- Перемещение героя ----
-bool moveHero(GameMap& map, int dx, int dy) {
+// ---- Один шаг героя. Возвращает символ клетки, на которую встали ('\0' — нельзя) ----
+// ВАЖНО: возвращаем ИМЕННО то, что было на клетке (стрелку или '.'), потому что
+// после шага в map.cells[heroY][heroX] уже стоит '@'.
+static char stepHero(GameMap& map, int dx, int dy) {
     int nx = map.heroX + dx;
     int ny = map.heroY + dy;
-    if (!isWalkable(map, nx, ny)) {
-        std::cout << "Туда нельзя пройти.\n";
-        return false;
-    }
-    // стираем старого героя
+    if (!isWalkable(map, nx, ny)) return '\0';
+
+    char target = map.cells[ny][nx];          // запоминаем: '.', '^', 'v', '<', '>'
     map.cells[map.heroY][map.heroX] = TILE_FLOOR;
-    // ставим нового
     map.heroX = nx;
     map.heroY = ny;
     map.cells[ny][nx] = TILE_HERO;
+    return target;
+}
+
+// ---- Применение сквозняка. wind — символ, на который встал герой ----
+static bool applyWind(GameMap& map, char wind) {
+    int dx = 0, dy = 0;
+
+    switch (wind) {
+        case TILE_WIND_UP:    dy = -1; break;
+        case TILE_WIND_DOWN:  dy =  1; break;
+        case TILE_WIND_LEFT:  dx = -1; break;
+        case TILE_WIND_RIGHT: dx =  1; break;
+        default: return false;   // не стрелка — ветра нет
+    }
+
+    std::cout << "Сквозняк! Героя сдувает";
+    if (dy == -1) std::cout << " вверх";
+    if (dy ==  1) std::cout << " вниз";
+    if (dx == -1) std::cout << " влево";
+    if (dx ==  1) std::cout << " вправо";
+    std::cout << "!\n";
+
+    for (int i = 0; i < WIND_PUSH_DIST; ++i) {
+        int nx = map.heroX + dx;
+        int ny = map.heroY + dy;
+
+        if (!isWalkable(map, nx, ny)) {
+            std::cout << "Ветер ударяет в препятствие — герой остановлен.\n";
+            break;
+        }
+
+        map.cells[map.heroY][map.heroX] = TILE_FLOOR;
+        map.heroX = nx;
+        map.heroY = ny;
+        map.cells[ny][nx] = TILE_HERO;
+    }
+    return true;
+}
+
+// ---- Ход героя: шаг → если встал на стрелку, применяем ветер ----
+bool moveHero(GameMap& map, int dx, int dy) {
+    char landed = stepHero(map, dx, dy);
+    if (landed == '\0') {
+        std::cout << "Туда нельзя пройти.\n";
+        return false;
+    }
+    applyWind(map, landed);   // ← передаём символ ЯВНО, не читаем из cells
     return true;
 }

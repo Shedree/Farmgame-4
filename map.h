@@ -14,7 +14,7 @@ bool   allocateMap(GameMap& map, int w, int h);
 void   freeMap(GameMap& map);          // безопасно вызывать повторно
 
 // Генерация
-bool   generateMap(GameMap& map);      // случайный размер, стены, препятствия, герой
+bool   generateMap(GameMap& map);      // случайный размер, стены, препятствия, ветер, герой
 bool   generateMapWithSize(GameMap& map, int w, int h); // для тестов/повторов
 
 // Работа с картой
