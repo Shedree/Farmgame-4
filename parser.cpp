@@ -7,8 +7,6 @@
 #include <utility>
 #include <vector>
 
-// TODO: валидация значений (difficulty ∈ {easy,hard}) — когда настройки
-// начнут влиять на геймплей. Пока просто key=value.
 void parseConfig() {
     std::ifstream in("input.txt");
     if (!in.is_open()) {

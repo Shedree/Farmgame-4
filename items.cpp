@@ -7,7 +7,6 @@
 #include <cstring>
 #include <cctype>
 
-// atoi("Дерево") молча вернёт 0 — получили бы ложный ID. Свой парсер.
 static bool parseLeadingInt(const std::string& line, int& out_id, size_t& used) {
     size_t i = 0;
     while (i < line.size() && std::isspace((unsigned char)line[i])) ++i;
@@ -27,7 +26,7 @@ static bool parseLeadingInt(const std::string& line, int& out_id, size_t& used) 
 void loadItemNames() {
     std::ifstream f("items.txt");
     if (!f.is_open()) {
-        std::cout << "Предупреждение: items.txt не найден. Стандартные названия.\n";
+        std::cout << "РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ: items.txt РЅРµ РЅР°Р№РґРµРЅ. РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°Р·РІР°РЅРёСЏ.\n";
         return;
     }
     std::string line;

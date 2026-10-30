@@ -8,7 +8,6 @@
 
 void initInventory() {
     for (int& slot : inventory) slot = ID_nothing;
-    // Õàðäêîä ñòàðòîâîãî íàáîðà — ñþæåòíûé «ïåðâûé äåíü», íå ìàãèÿ.
     if (INVENTORY_SIZE > 4) {
         inventory[1] = ID_wood;
         inventory[2] = ID_stone;
@@ -18,48 +17,48 @@ void initInventory() {
 }
 
 void showInventory() {
-    std::cout << "\n--- Èíâåíòàðü " << farmer_name << " ---\n";
+    std::cout << "\n--- Ð˜Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ " << farmer_name << " ---\n";
     for (int i = 0; i < INVENTORY_SIZE; ++i)
-        std::cout << "Ñëîò " << i << ": [" << inventory[i] << "] - "
+        std::cout << "Ð¡Ð»Ð¾Ñ‚ " << i << ": [" << inventory[i] << "] - "
         << item_names[inventory[i]] << "\n";
 }
 
 void placeItem() {
-    const int slot = readInt(0, INVENTORY_SIZE - 1, "Ââåäèòå íîìåð ñëîòà (0-9): ");
-    const int id = readInt(0, MAX_ITEMS - 1, "Ââåäèòå ID ïðåäìåòà (0-9): ");
+    const int slot = readInt(0, INVENTORY_SIZE - 1, "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð¾Ð¼ÐµÑ€ ÑÐ»Ð¾Ñ‚Ð° (0-9): ");
+    const int id = readInt(0, MAX_ITEMS - 1, "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ ID Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚Ð° (0-9): ");
     inventory[slot] = id;
-    std::cout << "Â ñëîò " << slot << " ïîìåùåí: " << item_names[id] << "\n";
+    std::cout << "Ð’ ÑÐ»Ð¾Ñ‚ " << slot << " Ð¿Ð¾Ð¼ÐµÑ‰ÐµÐ½: " << item_names[id] << "\n";
 }
 
 void dropItem() {
     const int slot = readInt(0, INVENTORY_SIZE - 1,
-        "Ââåäèòå íîìåð ñëîòà (0-9), ÷òîáû îïóñòîøèòü: ");
+        "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð¾Ð¼ÐµÑ€ ÑÐ»Ð¾Ñ‚Ð° (0-9), Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¾Ñ‡Ð¸ÑÑ‚Ð¸Ñ‚ÑŒ: ");
     inventory[slot] = ID_nothing;
-    std::cout << "Ñëîò " << slot << " î÷èùåí.\n";
+    std::cout << "Ð¡Ð»Ð¾Ñ‚ " << slot << " Ð¾Ñ‡Ð¸Ñ‰ÐµÐ½.\n";
 }
 
 void auditResources() {
-    const int target = readInt(0, MAX_ITEMS - 1, "Ââåäèòå ID ïðåäìåòà äëÿ ïîèñêà: ");
+    const int target = readInt(0, MAX_ITEMS - 1, "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ ID Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚Ð° Ð´Ð»Ñ Ð¿Ð¾Ð¸ÑÐºÐ°: ");
     int total = 0;
-    std::cout << item_names[target] << " (ID " << target << ") â ñëîòàõ: ";
+    std::cout << item_names[target] << " (ID " << target << ") Ð² ÑÐ»Ð¾Ñ‚Ð°Ñ…: ";
     for (int i = 0; i < INVENTORY_SIZE; ++i)
         if (inventory[i] == target) { std::cout << i << " "; ++total; }
-    if (!total) std::cout << "îòñóòñòâóåò";
-    std::cout << "\nÊîëè÷åñòâî: " << total << "\n";
+    if (!total) std::cout << "Ð¾Ñ‚ÑÑƒÑ‚ÑÑ‚Ð²ÑƒÐµÑ‚";
+    std::cout << "\nÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾: " << total << "\n";
 }
 
 void searchItemByName() {
     char query[MAX_NAME_LEN];
-    readLine(query, MAX_NAME_LEN, "Ââåäèòå íàçâàíèå ïðåäìåòà äëÿ ïîèñêà: ");
+    readLine(query, MAX_NAME_LEN, "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚Ð° Ð´Ð»Ñ Ð¿Ð¾Ð¸ÑÐºÐ°: ");
     const int id = findItemIdByName(query);
     if (id < 0) {
-        std::cout << "Ïðåäìåò \"" << query << "\" íå íàéäåí â êàòàëîãå.\n";
+        std::cout << "ÐŸÑ€ÐµÐ´Ð¼ÐµÑ‚ \"" << query << "\" Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð² ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³Ðµ.\n";
         return;
     }
     bool any = false;
-    std::cout << "\"" << query << "\" (ID " << id << ") â ñëîòàõ: ";
+    std::cout << "\"" << query << "\" (ID " << id << ") Ð² ÑÐ»Ð¾Ñ‚Ð°Ñ…: ";
     for (int i = 0; i < INVENTORY_SIZE; ++i)
         if (inventory[i] == id) { std::cout << i << " "; any = true; }
-    if (!any) std::cout << "îòñóòñòâóåò";
+    if (!any) std::cout << "Ð¾Ñ‚ÑÑƒÑ‚ÑÑ‚Ð²ÑƒÐµÑ‚";
     std::cout << "\n";
 }

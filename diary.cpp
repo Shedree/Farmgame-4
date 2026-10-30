@@ -8,16 +8,16 @@
 void writeDiary(int day, int hour) {
     std::ofstream f("diary.txt", std::ios::app);
     if (!f.is_open()) {
-        std::cout << "Îøèáêà: diary.txt íå îòêðûò.\n";
+        std::cout << "ÐžÑˆÐ¸Ð±ÐºÐ°: diary.txt Ð½Ðµ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚.\n";
         return;
     }
-    f << "=== Çàïèñü â äíåâíèêå ===\n"
-        << "Ôåðìåð: " << farmer_name << "\n"
-        << "Âðåìÿ: Äåíü " << day << ", " << formatClock(hour) << "\n"
-        << "Èíâåíòàðü:\n";
+    f << "=== Ð—Ð°Ð¿Ð¸ÑÑŒ Ð² Ð´Ð½ÐµÐ²Ð½Ð¸ÐºÐµ ===\n"
+        << "Ð¤ÐµÑ€Ð¼ÐµÑ€: " << farmer_name << "\n"
+        << "Ð’Ñ€ÐµÐ¼Ñ: Ð”ÐµÐ½ÑŒ " << day << ", " << formatClock(hour) << "\n"
+        << "Ð˜Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ:\n";
     for (int i = 0; i < INVENTORY_SIZE; ++i)
-        f << "  Ñëîò " << i << ": [" << inventory[i] << "] - "
+        f << "  Ð¡Ð»Ð¾Ñ‚ " << i << ": [" << inventory[i] << "] - "
         << item_names[inventory[i]] << "\n";
     f << "=========================\n\n";
-    std::cout << "Ñîñòîÿíèå óñïåøíî çàïèñàíî â diary.txt\n";
+    std::cout << "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð·Ð°Ð¿Ð¸ÑÐ°Ð½Ð¾ Ð² diary.txt\n";
 }

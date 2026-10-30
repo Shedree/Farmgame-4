@@ -4,7 +4,7 @@
 #include <iostream>
 
 void printTime(int day, int hour) {
-    std::cout << "Òåêóùåå âðåìÿ: Äåíü " << day << ", "
+    std::cout << "Ð¢ÐµÐºÑƒÑ‰ÐµÐµ Ð²Ñ€ÐµÐ¼Ñ: Ð”ÐµÐ½ÑŒ " << day << ", "
         << formatClock(hour) << "\n";
 }
 

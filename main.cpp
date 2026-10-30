@@ -10,18 +10,21 @@
 #include "game_time.h"
 #include "diary.h"
 #include "parser.h"
+#include "adventure.h"   // в†ђ РЅРѕРІС‹Р№ РјРѕРґСѓР»СЊ
 
 using std::cin;
 using std::cout;
 
 int main() {
-    SetConsoleCP(1251);     
-    SetConsoleOutputCP(1251);
-    readLine(farmer_name, FARMER_NAME_LEN + 1,
-        "Введите имя вашего фермера (до 32 символов): ");
-    if (farmer_name[0] == '\0')
-        std::strncpy(farmer_name, "Безымянный фермер", FARMER_NAME_LEN);
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
 
+    readLine(farmer_name, FARMER_NAME_LEN + 1,
+        "Р’РІРµРґРёС‚Рµ РёРјСЏ РІР°С€РµРіРѕ С„РµСЂРјРµСЂР° (РґРѕ 32 СЃРёРјРІРѕР»РѕРІ): ");
+    if (farmer_name[0] == '\0') {
+        std::strncpy(farmer_name, "Р‘РµР·С‹РјСЏРЅРЅС‹Р№ С„РµСЂРјРµСЂ", FARMER_NAME_LEN);
+        farmer_name[FARMER_NAME_LEN] = '\0';
+    }
     loadItemNames();
     initInventory();
 
@@ -30,32 +33,30 @@ int main() {
     int choice;
 
     do {
-        cout << "\n=== Ферма " << farmer_name << " | День " << current_day
+        cout << "\n=== Р¤РµСЂРјР° " << farmer_name << " | Р”РµРЅСЊ " << current_day
             << " | " << formatClock(current_hour) << " ===\n";
-        cout << "1. Показать время\n";
-        cout << "2. Работать (добавить часы)\n";
-        cout << "3. Показать инвентарь\n";
-        cout << "4. Положить предмет в слот\n";
-        cout << "5. Выбросить предмет\n";
-        cout << "6. Ревизия ресурсов (ID)\n";
-        cout << "7. Поиск предмета по названию\n";
-        cout << "8. Записать состояние в дневник\n";
-        cout << "9. Расшифровать input.txt (парсер .ini)\n";
-        cout << "0. Выход\n";
+        cout << "1. РџРѕРєР°Р·Р°С‚СЊ РІСЂРµРјСЏ\n";
+        cout << "2. Р Р°Р±РѕС‚Р°С‚СЊ (РґРѕР±Р°РІРёС‚СЊ С‡Р°СЃС‹)\n";
+        cout << "3. РџРѕРєР°Р·Р°С‚СЊ РёРЅРІРµРЅС‚Р°СЂСЊ\n";
+        cout << "4. РџРѕР»РѕР¶РёС‚СЊ РїСЂРµРґРјРµС‚ РІ СЃР»РѕС‚\n";
+        cout << "5. Р’С‹Р±СЂРѕСЃРёС‚СЊ РїСЂРµРґРјРµС‚\n";
+        cout << "6. Р РµРІРёР·РёСЏ СЂРµСЃСѓСЂСЃРѕРІ (ID)\n";
+        cout << "7. РџРѕРёСЃРє РїСЂРµРґРјРµС‚Р° РїРѕ РЅР°Р·РІР°РЅРёСЋ\n";
+        cout << "8. Р—Р°РїРёСЃР°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РІ РґРЅРµРІРЅРёРє\n";
+        cout << "9. Р Р°СЃС€РёС„СЂРѕРІР°С‚СЊ input.txt (РїР°СЂСЃРµСЂ .ini)\n";
+        cout << "10. РћС‚РїСЂР°РІРёС‚СЊСЃСЏ РІ РїСЂРёРєР»СЋС‡РµРЅРёРµ\n";
+        cout << "0. Р’С‹С…РѕРґ\n";
 
-        choice = readInt(0, MENU_ITEMS_COUNT, "Выберите действие: ");
+        choice = readInt(0, MENU_ITEMS_COUNT, "Р’С‹Р±РµСЂРёС‚Рµ РґРµР№СЃС‚РІРёРµ: ");
 
-        // switch — требование лабы; map<int,function> для 10 пунктов — оверхед.
         switch (choice) {
         case 0:
-            cout << "Выход. До свидания, " << farmer_name << "!\n";
+            cout << "Р’С‹С…РѕРґ. Р”Рѕ СЃРІРёРґР°РЅРёСЏ, " << farmer_name << "!\n";
             break;
-        case 1:
-            printTime(current_day, current_hour);
-            break;
+        case 1: printTime(current_day, current_hour); break;
         case 2: {
             const int hours = readInt(0, MAX_WORK_HOURS,
-                "Сколько часов потратить на работу (0-"
+                "РЎРєРѕР»СЊРєРѕ С‡Р°СЃРѕРІ РїРѕС‚СЂР°С‚РёС‚СЊ РЅР° СЂР°Р±РѕС‚Сѓ (0-"
                 + std::to_string(MAX_WORK_HOURS) + ")? ");
             advanceTime(current_day, current_hour, hours);
             break;
@@ -67,8 +68,9 @@ int main() {
         case 7: searchItemByName(); break;
         case 8: writeDiary(current_day, current_hour); break;
         case 9: parseConfig();      break;
+        case 10: runAdventure();    break;   // в†ђ Рї.10
         default:
-            cout << "Неизвестный пункт меню.\n";
+            cout << "РќРµРёР·РІРµСЃС‚РЅС‹Р№ РїСѓРЅРєС‚ РјРµРЅСЋ.\n";
             break;
         }
     } while (choice != 0);

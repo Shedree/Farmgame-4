@@ -13,11 +13,11 @@ int readInt(int lo, int hi, const std::string& prompt) {
                 std::cin.ignore(INPUT_FLUSH_LIMIT, '\n');
                 return v;
             }
-            std::cout << "Îøèáêà! ×èñëî äîëæíî áûòü îò " << lo
-                << " äî " << hi << ".\n";
+            std::cout << "ÐžÑˆÐ¸Ð±ÐºÐ°! Ð§Ð¸ÑÐ»Ð¾ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð±Ñ‹Ñ‚ÑŒ Ð¾Ñ‚ " << lo
+                << " Ð´Ð¾ " << hi << ".\n";
         }
         else {
-            std::cout << "Îøèáêà! Ââîäèòå òîëüêî öèôðû.\n";
+            std::cout << "ÐžÑˆÐ¸Ð±ÐºÐ°! Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ñ†ÐµÐ»Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾.\n";
             std::cin.clear();
             std::cin.ignore(INPUT_FLUSH_LIMIT, '\n');
         }
