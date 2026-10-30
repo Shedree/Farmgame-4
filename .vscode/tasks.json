@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build farm game",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-std=c++17",
+                "-g",
+                "-Wall",
+                "-Wextra",
+                "main.cpp",
+                "console.cpp",
+                "diary.cpp",
+                "game_time.cpp",
+                "globals.cpp",
+                "inventory.cpp",
+                "items.cpp",
+                "parser.cpp",
+                "map.cpp",
+                "adventure.cpp",
+                "-o",
+                "farm.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        }
+    ]
+}
