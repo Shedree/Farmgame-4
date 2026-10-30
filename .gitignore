@@ -1,0 +1,12 @@
+*.exe
+*.o
+*.obj
+*.out
+*.pdb
+*.ilk
+*.idb
+.vs/
+build/
+Debug/
+Release/
+*.user
